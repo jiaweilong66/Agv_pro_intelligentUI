@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Operation</class>
+ <widget class="QWidget" name="Operation">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1217</width>
+    <height>819</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Intelligent Logistics System</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">border-radius: 5px;</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2">
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">.QWidget {
+ background-color: rgb(218, 218, 218);
+}</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1">
+      <item>
+       <widget class="QWidget" name="widget_3" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="title">
+           <property name="font">
+            <font>
+             <family>Bahnschrift Light</family>
+             <pointsize>18</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Intelligent Logistics System</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_17" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Language Selection</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="language_selection">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);
+border-radius: 2px;
+</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>English</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Chinese</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_2" native="true">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(218, 218, 218);</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,1">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="functionalWidget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>450</width>
+          <height>0</height>
+         </size>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,1,1,0,1,1,1">
+         <item>
+          <widget class="QWidget" name="widget_9" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_7" stretch="3,0">
+            <item>
+             <widget class="QWidget" name="widget_13" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Intelligent Logistics Task</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_14" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="11">
+               <item>
+                <widget class="QPushButton" name="quick_start_button">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color:rgb(41, 128, 185);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Quick Start</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_8" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_10" stretch="0,1">
+            <item>
+             <widget class="QWidget" name="widget_6" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_11">
+               <item>
+                <widget class="QLabel" name="label_6">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Lidar</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_16" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_11">
+               <item>
+                <widget class="QPushButton" name="radar_control_button">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color:rgb(41, 128, 185);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Open</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_5" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12" stretch="0,1">
+            <item>
+             <widget class="QWidget" name="widget_7" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_13">
+               <item>
+                <widget class="QLabel" name="label_8">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Navigation</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_10" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QPushButton" name="navigation_control_button">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color:rgb(41, 128, 185);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Open</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_15" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QWidget" name="widget_12" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_14">
+               <item>
+                <widget class="QLabel" name="label_10">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Intelligent Logistics Tasks</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_11" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_15">
+               <item>
+                <widget class="QPushButton" name="navigation_button">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color: rgb(39, 174, 96);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Move to Shelf</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="sorting_button">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color: rgb(39, 174, 96);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Circular Sorting</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="charging_button">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color: rgb(39, 174, 96);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Automatic Charge</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_20" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QWidget" name="widget_19" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_15">
+               <item>
+                <widget class="QLabel" name="label_11">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Visual Functional</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_21" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="1,1,1">
+               <item>
+                <widget class="QPushButton" name="OCR_identification_button">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color:rgb(41, 128, 185);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>OCR Text Detect</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="ARUCO_identification_button">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color:rgb(41, 128, 185);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>ARUCO Code Detect</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="QR_identification_button">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color:rgb(41, 128, 185);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>QR Code Detect</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_22" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QWidget" name="widget_26" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_16">
+               <item>
+                <widget class="QLabel" name="label_12">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Motion Control</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_23" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_17">
+               <item>
+                <widget class="QPushButton" name="joystick_control_button">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color: rgb(39, 174, 96);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Open Joystick Control</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="keyboard_control_button">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+	background-color: rgb(39, 174, 96);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Open Keyboard Control</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_25" native="true">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8" stretch="1,1">
+         <property name="spacing">
+          <number>9</number>
+         </property>
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QWidget" name="widget_24" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QWidget" name="widget_18" native="true">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(236, 240, 241);</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_13">
+               <property name="leftMargin">
+                <number>9</number>
+               </property>
+               <property name="topMargin">
+                <number>9</number>
+               </property>
+               <property name="rightMargin">
+                <number>9</number>
+               </property>
+               <property name="bottomMargin">
+                <number>9</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0">
+                 <property name="spacing">
+                  <number>11</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="arm_camera_view">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QLabel{
+	background-color: rgb(218, 218, 218);
+} 
+</string>
+                   </property>
+                   <property name="text">
+                    <string>MechArm 270 Camera View</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="agv_camera_view">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QLabel{
+	background-color: rgb(218, 218, 218);
+} 
+</string>
+                   </property>
+                   <property name="text">
+                    <string>AGV 2D Camera View</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="widget_4" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(236, 240, 241);</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QTextBrowser" name="logger_browser">
+              <property name="styleSheet">
+               <string notr="true">background-color:rgb(43, 43, 43);</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="log_clear_button">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+	background-color: rgb(39, 174, 96);
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+QPushButton:disabled {
+	background-color:gray;
+	color: rgb(255, 255, 255);
+	border-radius: 7px;
+	border: 1px groove gray;
+	border-style: outset;
+	font: 75 9pt &quot;Arial&quot;;
+}
+</string>
+              </property>
+              <property name="text">
+               <string>Log Clear</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
