@@ -1,0 +1,40 @@
+
+========== Recording time: 2026-03-12 10:01:33  ==========
+Determine the number of items and the upper/lower layers. : 4.18s
+Approaching the package : 39.11s
+Fetch complete       : 39.64s
+Near the basket      : 73.03s
+discharge            : 20.99s
+-----------------------------------
+Total time           : 176.95s
+==============================================
+
+========== Recording time: 2026-03-12 10:05:01  ==========
+Determine the number of items and the upper/lower layers. : 15.86s
+Approaching the package : 59.43s
+Fetch complete       : 37.99s
+Near the basket      : 55.29s
+discharge            : 19.06s
+-----------------------------------
+Total time           : 187.63s
+==============================================
+
+========== Recording time: 2026-03-12 10:36:55  ==========
+Determine the number of items and the upper/lower layers. : 5.03s
+Approaching the package : 28.74s
+Fetch complete       : 41.23s
+Near the basket      : 43.32s
+discharge            : 20.20s
+-----------------------------------
+Total time           : 138.53s
+==============================================
+
+========== Recording time: 2026-03-12 11:44:35  ==========
+Determine the number of items and the upper/lower layers. : 4.36s
+Approaching the package : 26.74s
+Fetch complete       : 39.37s
+Near the basket      : 39.67s
+discharge            : 18.24s
+-----------------------------------
+Total time           : 128.37s
+==============================================
