@@ -8,12 +8,20 @@ import time
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-import paddle.utils
-from paddleocr import PaddleOCR
 from pyzbar import pyzbar
 from components.camera import QCameraMiddleware
-paddle.utils.run_check()
-paddle.disable_signal_handler()
+
+# 尝试导入 PaddlePaddle，如果失败则使用模拟模式
+try:
+    import paddle.utils
+    from paddleocr import PaddleOCR
+    paddle.utils.run_check()
+    paddle.disable_signal_handler()
+    PADDLE_AVAILABLE = True
+except (ImportError, ModuleNotFoundError):
+    print("Warning: PaddlePaddle not found, OCR functionality will be limited")
+    PADDLE_AVAILABLE = False
+    PaddleOCR = None
 
 
 class CodeType:
@@ -207,13 +215,30 @@ class OCRCodeDetector(QCameraMiddleware):
     def __init__(self, font_path="./SIMFANG.TTF", font_size=40):
         super().__init__()
         logging.basicConfig(level=logging.ERROR)
-        self.paddle_ocr = PaddleOCR(use_angle_cls=True, lang='ch')
-        self.font = ImageFont.truetype(font_path, font_size)
+        
+        if PADDLE_AVAILABLE and PaddleOCR is not None:
+            self.paddle_ocr = PaddleOCR(use_angle_cls=True, lang='ch')
+        else:
+            self.paddle_ocr = None
+            print("Warning: PaddleOCR not available, OCR detection disabled")
+            
+        try:
+            self.font = ImageFont.truetype(font_path, font_size)
+        except:
+            self.font = ImageFont.load_default()
+            
         self.text_color = (0, 255, 0)
         self.time_out = 30
         self.start_time = time.time()
 
     def __call__(self, raw_frame: np.array):
+        if self.paddle_ocr is None:
+            # 模拟模式：在图像上显示提示信息
+            cv2.putText(raw_frame, "OCR Not Available (Mock Mode)", 
+                       (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+            self.set_frame(raw_frame)
+            return None
+            
         self.set_frame(raw_frame)
         ocr_result_list = self.paddle_ocr.ocr(raw_frame, cls=True)
         for ocr_result in ocr_result_list:

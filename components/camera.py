@@ -177,16 +177,21 @@ class QCameraStreamCapture(QThread):
     def run(self):
         self.__running = True
         self.__is_opened = self.__capture.isOpened()
-        while self.__is_opened:
+        while self.__is_opened and self.__running:
             ret, frame = self.__capture.read()
+            
+            if not self.__running:
+                break
+                
             if not ret:
+                time.sleep(0.01)  # Prevent tight loop on read failure
                 continue
 
-            if self.__running is False:
-                break
             camera_stream = self.__middleware_handle(frame)
             self.__emit_stream(camera_stream)
-        self.__capture.release()
+            
+        if self.__capture is not None:
+            self.__capture.release()
         self.__is_opened = False
         self.__capture = None
         print(f"{self.pipeline} camera thread quit.")

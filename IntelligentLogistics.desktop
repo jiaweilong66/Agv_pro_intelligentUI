@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Intelligent Logistics System
+Comment=MyAGV Intelligent Logistics Management System
+Exec=bash -c "cd /home/ubuntu/intelligent-logistics-system && ./run_new_ui.sh"
+Icon=/home/ubuntu/intelligent-logistics-system/resources/icon.png
+Terminal=true
+Categories=Application;Development;
+StartupNotify=true

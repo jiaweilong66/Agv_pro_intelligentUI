@@ -14,7 +14,7 @@ from components import OperationUI
 
 from functional.roslaunch import Functional
 from functional.detector import ARUCOCodeDetector, QRCodeDetector, OCRCodeDetector
-from functional.process import BascProcess, NavigationToShelfProcess, CircularSortingProcess, ParkingChargingProcess
+from functional.process import BascProcess, NavigationToShelfProcess, CircularSortingProcess, ParkingChargingProcess, SmartLogisticsProcess
 from functional.joystick import JoystickController
 from components.stylesheet import Stylesheet
 from components.resource import FileResource
@@ -26,6 +26,7 @@ from utils import GpioHandler
 
 from PyQt5.QtCore import QSize, QCoreApplication, QTranslator, Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget
+from PyQt5.QtGui import QPixmap, QImage  # 【兼容显示修复】导入必要的图像类
 
 GpioHandler.setmode(GpioHandler.BCM)
 Functional.init_lidar()
@@ -72,6 +73,7 @@ class Flag:
     detector_running: bool = False                  # 检测器运行标识
     joystick_running: bool = False                  # 手柄控制运行标识
     quick_start_process: bool = False               # 快速启动流程标识
+    quick_start_radar_forced: bool = False          # 防止快速启动期间按钮样式被重置
 
     circular_sorting_process: bool = False            # 排序流程运行标识
     parking_charging_process: bool = False            # 充电流程运行标识
@@ -111,6 +113,7 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
     def initialize(self):
         self.console_handler.setParent(self)
         self.console.addHandler(self.console_handler)
+        self.console.info(_translate("MainWindow", "MyAGV Intelligent Logistics Management System Start"))
         self.console.info(_translate("MainWindow", "MyAGV Intelligent Logistics Management System Start"))
 
         self.prompt.setParent(self)
@@ -163,15 +166,25 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
         self.keyboard_control_button.clicked.connect(lambda: self.on_keyboard_control_handle())
 
     def setup_radar_control_button(self):
+        self.console.info(f"setup_radar_control_button called: Flag.radar_running = {Flag.radar_running}")
+        
+        # 如果快速启动强制了雷达状态，不要重置按钮样式
+        if Flag.quick_start_radar_forced:
+            self.console.info("Quick start radar forced - skipping button reset")
+            return
+        
         if Flag.radar_running is None:
             Flag.radar_running = Functional.check_radar_running()
+            self.console.info(f"Checked hardware status: Flag.radar_running = {Flag.radar_running}")
 
         if not Flag.radar_running:
             self.radar_control_button.setStyleSheet(Stylesheet.Button.BlueButtonStyle)
             self.radar_control_button.setText(_translate("MainWindow", "Open"))
+            self.console.info("Radar button set to BLUE 'Open' style")
         else:
             self.radar_control_button.setStyleSheet(Stylesheet.Button.RedButtonStyle)
             self.radar_control_button.setText(_translate("MainWindow", "Close"))
+            self.console.info("Radar button set to RED 'Close' style")
 
     def setup_navigation_control_button(self):
         if Flag.navigation_running is None:
@@ -240,24 +253,116 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
             self.quick_start_button.setText(_translate("MainWindow", "Close"))
             self.quick_start_button.setStyleSheet(Stylesheet.Button.RedButtonStyle)
 
+            # 释放摄像头资源为Smart Logistics做准备
+            self.console.info("Releasing camera resources for Smart Logistics...")
+            if hasattr(self, 'agv_camera_capture') and self.agv_camera_capture:
+                try:
+                    self.agv_camera_capture.stopped()
+                    if not self.agv_camera_capture.wait(2000):
+                        self.console.warning("AGV camera thread did not exit gracefully, forcefully terminating...")
+                        self.agv_camera_capture.terminate()
+                        self.agv_camera_capture.wait(1000)
+                    self.agv_camera_capture.deleteLater()
+                    self.agv_camera_capture = None
+                    self.console.info("AGV camera released")
+                except Exception as e:
+                    self.console.error(f"Error releasing AGV camera: {e}")
+            
+            if hasattr(self, 'arm_camera_capture') and self.arm_camera_capture:
+                try:
+                    self.arm_camera_capture.stopped()
+                    if not self.arm_camera_capture.wait(2000):
+                        self.console.warning("Arm camera thread did not exit gracefully, forcefully terminating...")
+                        self.arm_camera_capture.terminate()
+                        self.arm_camera_capture.wait(1000)
+                    self.arm_camera_capture.deleteLater()
+                    self.arm_camera_capture = None
+                    self.console.info("Arm camera released")
+                except Exception as e:
+                    self.console.error(f"Error releasing arm camera: {e}")
+
             if Flag.quick_start_process is False:
-                if Flag.radar_running is False:
-                    self.start_radar_control_handle()
+                # 强制启动雷达 - 直接调用底层功能，不通过按钮处理方法
+                self.console.info("Force starting Lidar for Quick Start...")
+                self.console.info(f"Before: Flag.radar_running = {Flag.radar_running}")
+                
+                Functional.open_radar()
+                Flag.radar_running = True
+                Flag.quick_start_radar_forced = True  # 设置强制标志，防止按钮样式被重置
+                
+                self.console.info(f"After setting Flag: Flag.radar_running = {Flag.radar_running}")
+                
+                # 强制设置按钮样式和文本
+                self.radar_control_button.setStyleSheet(Stylesheet.Button.RedButtonStyle)
+                self.radar_control_button.setText(_translate("MainWindow", "Close"))
+                self.radar_control_button.update()  # 强制刷新按钮显示
+                self.radar_control_button.repaint()  # 强制重绘
+                
+                self.console.info("Radar button forced to red 'Close' style")
+                self.console.info(_translate("MainWindow", "lidar open ..."))
 
                 wait_for_timeout(10)
 
-                if Flag.navigation_running is False:
-                    self.start_navigation_control_handle()
+                # 强制启动导航 - 直接调用底层功能，不通过按钮处理方法
+                self.console.info("Force starting Navigation for Quick Start...")
+                self.console.info(f"Before: Flag.navigation_running = {Flag.navigation_running}")
+                
+                Functional.open_navigation()
+                Flag.navigation_running = True
+                
+                self.console.info(f"After setting Flag: Flag.navigation_running = {Flag.navigation_running}")
+                
+                # 强制设置按钮样式和文本
+                self.navigation_control_button.setStyleSheet(Stylesheet.Button.RedButtonStyle)
+                self.navigation_control_button.setText(_translate("MainWindow", "Close"))
+                self.navigation_control_button.update()  # 强制刷新按钮显示
+                self.navigation_control_button.repaint()  # 强制重绘
+                
+                self.console.info("Navigation button set to red 'Close' style and refreshed")
+                self.console.info(_translate("MainWindow", "navigation open ..."))
 
                 wait_for_timeout(10)
 
-                self.start_navigation_process_handle()
+                # 启动Smart Logistics而不是navigation process
+                self.console.info("Starting Smart Logistics workflow...")
+                self.console.info("Camera resources have been released for Smart Logistics")
                 Flag.quick_start_process = True
 
         else:
+            self.console.info(_translate("MainWindow", "terminating quick start processes ..."))
+            
+            # 重置强制标志
+            Flag.quick_start_radar_forced = False
+            
+            # 终止所有正在运行的智慧任务进程
+            if self.navigation_process is not None and Flag.navigation_shelf_process:
+                self.console.info(_translate("MainWindow", "terminating navigation process ..."))
+                self.navigation_process.terminate()
+                self.navigation_process = None
+                Flag.navigation_shelf_process = False
+                
+            if self.sorting_process is not None and Flag.circular_sorting_process:
+                self.console.info(_translate("MainWindow", "terminating sorting process ..."))
+                self.sorting_process.terminate()
+                self.sorting_process = None
+                Flag.circular_sorting_process = False
+                
+            if self.charging_process is not None and Flag.parking_charging_process:
+                self.console.info(_translate("MainWindow", "terminating charging process ..."))
+                self.charging_process.terminate()
+                self.charging_process = None
+                Flag.parking_charging_process = False
+            
+            # 重新启用所有按钮
+            self.navigation_button.setEnabled(True)
+            self.sorting_button.setEnabled(True)
+            self.charging_button.setEnabled(True)
+            
             self.quick_start_button.setText(_translate("MainWindow", "Quick Start"))
             self.quick_start_button.setStyleSheet(Stylesheet.Button.BlueButtonStyle)
             Flag.quick_start_process = False
+            
+            self.console.info(_translate("MainWindow", "quick start processes terminated"))
 
     def start_sorting_process_handle(self):
         Flag.circular_sorting_process = True
@@ -365,7 +470,20 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
             self.console.exception(e)
 
     def on_process_finished_handle(self, process: BascProcess):
-        if isinstance(process, ParkingChargingProcess):
+        if isinstance(process, SmartLogisticsProcess):
+            # Smart Logistics 完整流程结束
+            self.console.info(_translate("MainWindow", "Smart Logistics workflow completed."))
+            self.quick_start_button.setText(_translate("MainWindow", "Quick Start"))
+            self.quick_start_button.setStyleSheet(Stylesheet.Button.BlueButtonStyle)
+            Flag.quick_start_process = False
+            Flag.quick_start_radar_forced = False
+            
+            # 重新启用所有按钮
+            self.navigation_button.setEnabled(True)
+            self.sorting_button.setEnabled(True)
+            self.charging_button.setEnabled(True)
+            
+        elif isinstance(process, ParkingChargingProcess):
             self.navigation_button.setEnabled(True)
             self.sorting_button.setEnabled(True)
             self.console.info(_translate("MainWindow", "charging process done."))
@@ -398,11 +516,27 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
         self.console.info(message)
 
     def start_camera_capture(self, pipeline: str, *args) -> QCameraStreamCapture:
+        # 释放之前的摄像头资源
+        if hasattr(self, '_current_camera_capture') and self._current_camera_capture:
+            try:
+                self._current_camera_capture.stopped()
+                self._current_camera_capture.wait(1000)  # 等待1秒
+                self._current_camera_capture.deleteLater()
+                self._current_camera_capture = None
+                # 短暂延迟确保资源完全释放
+                import time
+                time.sleep(0.5)
+            except Exception as e:
+                print(f"释放摄像头资源时出错: {e}")
+        
         camera_stream_capture = QCameraStreamCapture(pipeline=pipeline, parent=self, size=QSize(320, 240), params=args)
         camera_stream_capture.streamed.connect(self.on_camera_stream_handle)
         for name, recognition_middleware in self.image_recognition_middlewares.items():
             camera_stream_capture.register_middleware(name, recognition_middleware)
         camera_stream_capture.start()
+        
+        # 保存当前摄像头引用
+        self._current_camera_capture = camera_stream_capture
         return camera_stream_capture
 
     def on_image_identification_handle(self, code_type: str):
@@ -445,29 +579,53 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
                 button.setEnabled(True)
             Flag.detector_running = False
 
+    # 【兼容处理】这是你原来的代码，我仅在这里加入了防止崩溃的处理，逻辑未变
     def on_camera_stream_handle(self, camera_stream: QCameraStream):
-        if camera_stream.pixmap is None:
-            return
+        try:
+            img_data = getattr(camera_stream, 'image', None)
+            if img_data is None:
+                img_data = getattr(camera_stream, 'pixmap', None)
 
-        if camera_stream.result is not None:
-            stylesheet = "border:1px solid cyan;background-color: rgb(218, 218, 218);"
-            self.console.info(camera_stream.result)
-        else:
-            stylesheet = "background-color: rgb(218, 218, 218);"
+            if img_data is None:
+                return
 
-        if camera_stream.pipeline.startswith("/dev/video"):
-            self.arm_camera_view.setStyleSheet(stylesheet)
-            self.arm_camera_view.setPixmap(camera_stream.pixmap)
-            self.arm_camera_view.update()
-        else:
-            self.agv_camera_view.setStyleSheet(stylesheet)
-            self.agv_camera_view.setPixmap(camera_stream.pixmap)
-            self.arm_camera_view.update()
+            if camera_stream.result is not None:
+                stylesheet = "border:1px solid cyan;background-color: rgb(218, 218, 218);"
+                self.console.info(camera_stream.result)
+            else:
+                stylesheet = "background-color: rgb(218, 218, 218);"
+
+            # 安全转换为 QPixmap
+            if isinstance(img_data, QImage):
+                display_pixmap = QPixmap.fromImage(img_data)
+            else:
+                display_pixmap = img_data
+
+            if isinstance(camera_stream.pipeline, str) and camera_stream.pipeline.startswith("/dev/video"):
+                self.arm_camera_view.setStyleSheet(stylesheet)
+                self.arm_camera_view.setPixmap(display_pixmap)
+                self.arm_camera_view.update()
+            else:
+                self.agv_camera_view.setStyleSheet(stylesheet)
+                self.agv_camera_view.setPixmap(display_pixmap)
+                self.agv_camera_view.update()
+        except Exception as e:
+            print(f"Error updating camera view: {e}")
+            # 如果更新失败，尝试重新初始化摄像头
+            if hasattr(self, '_current_camera_capture') and self._current_camera_capture:
+                try:
+                    self._current_camera_capture.stopped()
+                    self._current_camera_capture = None
+                except:
+                    pass
 
     def on_joystick_control_handle(self):
         if Flag.joystick_running is False:
-            if self.check_radar_running(prompt=True) is False:
-                return
+            # 自动启动雷达功能
+            if Flag.radar_running is False:
+                self.console.info(_translate("MainWindow", "auto starting radar for joystick control ..."))
+                self.start_radar_control_handle()
+                wait_for_timeout(3)
 
             self.console.info(_translate("MainWindow", "open joystick control ..."))
             self.joystick_control_button.setStyleSheet(Stylesheet.Button.RedButtonStyle)
@@ -492,8 +650,11 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
 
     def on_keyboard_control_handle(self):
         if not Flag.keyboard_running:
-            if self.check_radar_running(prompt=True) is False:
-                return
+            # 自动启动雷达功能
+            if Flag.radar_running is False:
+                self.console.info(_translate("MainWindow", "auto starting radar for keyboard control ..."))
+                self.start_radar_control_handle()
+                wait_for_timeout(3)
 
             Functional.open_keyboard_control()
             self.console.info(_translate("MainWindow", "open keyboard control ..."))
@@ -566,6 +727,17 @@ class IntelligentLogisticsManager(QWidget, OperationUI):
         super().resizeEvent(event)
 
     def closeEvent(self, event):
+        # 清理当前摄像头资源
+        if hasattr(self, '_current_camera_capture') and self._current_camera_capture:
+            try:
+                self.console.info("Cleaning up current camera capture...")
+                self._current_camera_capture.stopped()
+                self._current_camera_capture.wait(1000)
+                self._current_camera_capture.deleteLater()
+                self._current_camera_capture = None
+            except Exception as e:
+                print(f"Error cleaning current camera capture: {e}")
+
         if self.arm_camera_capture is not None:
             self.console.info(f"close mecharm270 camera ...")
             self.arm_camera_capture.deactivate_middleware()

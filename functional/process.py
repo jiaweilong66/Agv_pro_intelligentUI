@@ -632,3 +632,144 @@ class ParkingChargingProcess(BascProcess):
                     self.map_navigation.pub_vel(0, 0, 0)
                     break
 
+
+
+########################################################################################################################
+# # 智慧物流完整流程 - Smart Logistics Complete Workflow
+########################################################################################################################
+class SmartLogisticsProcess(BascProcess):
+    """
+    Complete Smart Logistics workflow process
+    Runs the Smart_Logistics_Kit-22-map/main.py in a subprocess with complete isolation
+    """
+    
+    def __init__(self, parent: T.Optional[QWidget] = None):
+        super().__init__(parent=parent)
+        self.log = logging.getLogger("console")
+        self.process_running = False
+        self.main_process = None
+        
+    def terminate(self):
+        """Terminate the smart logistics process"""
+        import os
+        import signal
+        
+        self.process_running = False
+        if self.main_process and self.main_process.poll() is None:
+            try:
+                # Kill entire process group for complete cleanup
+                os.killpg(os.getpgid(self.main_process.pid), signal.SIGTERM)
+                self.main_process.wait(timeout=5)
+            except Exception as e:
+                self.log.error(f"Error terminating process: {e}")
+                try:
+                    os.killpg(os.getpgid(self.main_process.pid), signal.SIGKILL)
+                except:
+                    pass
+        super().terminate()
+    
+    def process(self):
+        """
+        Execute the run_smart_logistics.sh script
+        """
+        import subprocess
+        import os
+        import signal
+        
+        self.process_running = True
+        self.notify_published("[WORKFLOW] Starting Smart Logistics complete workflow...")
+        
+        try:
+            # 1. 改为直接运行包含 main.py 的脚本
+            script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "run_smart_logistics.sh")
+            
+            if not os.path.exists(script_path):
+                self.notify_published(f"[ERROR] Workflow script not found: {script_path}")
+                return False
+            
+            # Make script executable
+            os.chmod(script_path, 0o755)
+            
+            # 2. 注意：此处删除了原本的 Functional.clear_radar() 和 GpioHandler.cleanup() 
+            # 防止在启动主程序前误把雷达电源切断
+            
+            self.notify_published("[STEP 3/5] ✓ Starting Smart Logistics main program...")
+            
+            # Set up complete environment
+            env = os.environ.copy()
+            
+            # Ensure DISPLAY is set for RViz
+            if 'DISPLAY' not in env:
+                env['DISPLAY'] = ':0'
+            
+            # Ensure ROS environment variables are set
+            env['ROS_MASTER_URI'] = 'http://localhost:11311'
+            env['ROS_HOSTNAME'] = 'localhost'
+            
+            # Run the shell script with complete environment
+            self.main_process = subprocess.Popen(
+                ['bash', script_path],
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                bufsize=1,
+                universal_newlines=True,
+                preexec_fn=os.setsid  
+            )
+            
+            self.notify_published("[INFO] Workflow running with cleaned environment")
+            self.notify_published("[STEP 4/5] MyAGV navigating and 270 arm working...")
+            
+            # Monitor process output - throttled to avoid overwhelming UI
+            import time as _time
+            _last_flush = _time.time()
+            _line_buffer = []
+            
+            for line in iter(self.main_process.stdout.readline, ''):
+                if not self.process_running:
+                    break
+                
+                line_stripped = line.rstrip()
+                if line_stripped:
+                    _line_buffer.append(f"[WORKFLOW] {line_stripped}")
+                
+                # Flush buffered lines at most once per second to reduce UI overhead
+                _now = _time.time()
+                if _line_buffer and (_now - _last_flush >= 1.0):
+                    # Send all buffered lines as a single message
+                    self.notify_published("\n".join(_line_buffer))
+                    _line_buffer.clear()
+                    _last_flush = _now
+            
+            # Flush remaining lines
+            if _line_buffer:
+                self.notify_published("\n".join(_line_buffer))
+                _line_buffer.clear()
+            
+            # Wait for process to fully terminate
+            self.main_process.wait()
+            
+            # Get exit code
+            exit_code = self.main_process.poll()
+            
+            if exit_code == 0 or exit_code is None:
+                self.notify_published("[STEP 5/5] ✓ Smart logistics workflow completed!")
+                self.notify_published("[SUCCESS] All tasks completed!")
+                return True
+            else:
+                self.notify_published(f"[INFO] Workflow process ended with code: {exit_code}")
+                return True
+            
+        except Exception as e:
+            self.notify_published(f"[ERROR] Workflow error: {e}")
+            self.log.exception(e)
+            return False
+        
+        finally:
+            self.process_running = False
+            if self.main_process and self.main_process.poll() is None:
+                try:
+                    os.killpg(os.getpgid(self.main_process.pid), signal.SIGTERM)
+                    self.main_process.wait(timeout=5)
+                except Exception as e:
+                    pass

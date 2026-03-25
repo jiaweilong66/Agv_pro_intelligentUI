@@ -14,7 +14,14 @@ from tf.transformations import quaternion_from_euler
 
 class MapNavigation(object, metaclass=Singleton):
     def __init__(self):
-        rospy.init_node('map_navigation', anonymous=False)
+        # Check if ROS node is already initialized
+        try:
+            rospy.get_node_uri()
+            # Node already initialized, skip init_node
+        except rospy.exceptions.ROSException:
+            # Node not initialized, initialize it
+            rospy.init_node('map_navigation', anonymous=False)
+        
         # ros publisher
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self.pub_setpose = rospy.Publisher('/initialpose', PoseWithCovarianceStamped, queue_size=10)

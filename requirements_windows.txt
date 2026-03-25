@@ -1,0 +1,13 @@
+# Windows 系统 UI 演示模式所需的最小依赖
+PyQt5>=5.14.1
+opencv-python>=4.5.0
+numpy>=1.19.0
+Pillow>=10.0.0
+pygame>=2.0.0
+# pyzbar>=0.1.9  # QR码识别（可选，需要额外安装 zbar 库）
+pyserial>=3.4
+
+# 注意：
+# 1. PaddlePaddle (OCR功能) 在 Windows 上安装较复杂，已设为可选
+# 2. pyzbar 需要先安装 zbar 库，可选安装
+# 3. ROS 和 pymycobot 仅在实际硬件上需要

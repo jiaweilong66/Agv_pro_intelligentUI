@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Intelligent Logistics UI
+Comment=智慧物流系统用户界面
+Exec=/home/er/intelligent-logistics-system/start_with_ros.sh
+Icon=utilities-terminal
+Terminal=true
+Categories=Application;Development;
+StartupNotify=true
+Path=/home/er/intelligent-logistics-system

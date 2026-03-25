@@ -6,10 +6,26 @@ import typing as T
 from functional.roslaunch import Functional
 
 import pygame
-import rospy
-from geometry_msgs.msg import Twist
-from pymycobot import MechArm270
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
+
+# 尝试导入 ROS 和机械臂相关模块
+try:
+    import rospy
+    from geometry_msgs.msg import Twist
+    ROS_AVAILABLE = True
+except (ImportError, ModuleNotFoundError):
+    print("Warning: ROS not found, joystick control will be limited")
+    ROS_AVAILABLE = False
+    rospy = None
+    Twist = None
+
+try:
+    from pymycobot import MechArm270
+    MYCOBOT_AVAILABLE = True
+except (ImportError, ModuleNotFoundError):
+    print("Warning: pymycobot not found, arm control will be limited")
+    MYCOBOT_AVAILABLE = False
+    MechArm270 = None
 
 arm_speed = 10
 init_angles = [90, 0, 0, 0, 90, 0]
@@ -17,24 +33,49 @@ init_angles = [90, 0, 0, 0, 90, 0]
 
 class CmdVelPublisher:
     def __init__(self):
-        # rospy.init_node('cmd_vel_publisher', anonymous=True)
+        if not ROS_AVAILABLE:
+            print("[MOCK MODE] CmdVelPublisher initialized in mock mode")
+            self.pub = None
+            self.move_cmd = None
+            self.rate = None
+            self.active = False
+            return
+            
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self.move_cmd = Twist()
         self.move_cmd.linear.x = 0
         self.move_cmd.linear.y = 0
         self.move_cmd.angular.z = 0
         self.rate = rospy.Rate(10)
+        self.active = True
         self.publish_thread = threading.Thread(
             target=self.publish_cmd_vel, daemon=True
         )
         self.publish_thread.start()
 
+    def pause(self):
+        """Temporarily suspend publishing to allow other ROS nodes to drive the robot"""
+        self.active = False
+        print("[CmdVelPublisher] Paused (relinquished control of /cmd_vel)")
+        
+    def resume(self):
+        """Resume joystick control publishing"""
+        self.active = True
+        print("[CmdVelPublisher] Resumed (taken control of /cmd_vel)")
+
     def publish_cmd_vel(self):
+        if not ROS_AVAILABLE or rospy is None:
+            return
         while not rospy.is_shutdown():
-            self.pub.publish(self.move_cmd)
+            if self.active and self.pub:
+                self.pub.publish(self.move_cmd)
             self.rate.sleep()
 
     def set_speed(self, x: float = 0.0, y: float = 0.0, yaw: float = 0.0):
+        if not ROS_AVAILABLE or self.move_cmd is None:
+            print(f"[MOCK MODE] Set speed: x={x}, y={y}, yaw={yaw}")
+            return
+        self.active = True # Automatically resume on manual input
         self.move_cmd.linear.x = x
         self.move_cmd.linear.y = y
         self.move_cmd.angular.z = yaw
@@ -47,7 +88,16 @@ class JoystickController(QThread):
     def __init__(self, parent: QObject = None):
         super(JoystickController, self).__init__(parent=parent)
         self.previous_state = [0, 0, 0, 0, 0, 0]
-        self.mech_arm = MechArm270("/dev/ttyACM0")
+        
+        if MYCOBOT_AVAILABLE and MechArm270 is not None:
+            try:
+                self.mech_arm = MechArm270("/dev/ttyACM0")
+            except:
+                print("[MOCK MODE] MechArm270 not available")
+                self.mech_arm = None
+        else:
+            self.mech_arm = None
+            
         self.cmd_vel_publisher = CmdVelPublisher()
         self.gripper_value = 100
         self.hat_pressed = False
@@ -68,16 +118,17 @@ class JoystickController(QThread):
         value = round(event.value, 2)
         if abs(value) == 1.0:
             self.previous_state[axis] = value
-            if axis == 0 and value == -1.00:
-                self.mech_arm.jog_coord(2, 1, arm_speed)
-            elif axis == 0 and value == 1.00:
-                self.mech_arm.jog_coord(2, 0, arm_speed)
-            if axis == 1 and value == 1.00:
-                self.mech_arm.jog_coord(1, 0, arm_speed)
-            elif axis == 1 and value == -1.00:
-                self.mech_arm.jog_coord(1, 1, arm_speed)
-            if axis == 2 and value == 1.00:
-                self.mech_arm.power_on()
+            if self.mech_arm:
+                if axis == 0 and value == -1.00:
+                    self.mech_arm.jog_coord(2, 1, arm_speed)
+                elif axis == 0 and value == 1.00:
+                    self.mech_arm.jog_coord(2, 0, arm_speed)
+                if axis == 1 and value == 1.00:
+                    self.mech_arm.jog_coord(1, 0, arm_speed)
+                elif axis == 1 and value == -1.00:
+                    self.mech_arm.jog_coord(1, 1, arm_speed)
+                if axis == 2 and value == 1.00:
+                    self.mech_arm.power_on()
             if axis == 4 and value == 1.00:
                 self.cmd_vel_publisher.set_speed(x=-0.2)
             elif axis == 4 and value == -1.00:
@@ -93,15 +144,16 @@ class JoystickController(QThread):
         else:
             if self.previous_state[axis] != 0:
                 self.cmd_vel_publisher.set_speed()
-                self.mech_arm.stop()
+                if self.mech_arm:
+                    self.mech_arm.stop()
                 self.previous_state[axis] = 0
 
     def joybutton_down_event_handle(self, event, joystick):
+        if not self.mech_arm:
+            return
+            
         if joystick.get_button(0) == 1:
-            self.gripper_value -= 10
-            if self.gripper_value < 0:
-                self.gripper_value = 0
-            self.mech_arm.set_gripper_value(self.gripper_value, 100)
+            self.mech_arm.set_gripper_value(0, 70)
             # mc.send_angles([-90, 0, 0, 0, 90, 0],50)
             self.mech_arm.send_angles([-93.6, 1.93, 6.24, -0.17, 68.81, -6.24], 50)
              
@@ -112,10 +164,7 @@ class JoystickController(QThread):
             Functional.turn_off_pump()
              
         if joystick.get_button(3) == 1:
-            self.gripper_value += 10
-            if self.gripper_value > 100:
-                self.gripper_value = 100
-            self.mech_arm.set_gripper_value(self.gripper_value, 100)
+            self.mech_arm.set_gripper_value(100, 70)
              
         if joystick.get_button(4) == 1:
             self.mech_arm.release_all_servos()
@@ -125,6 +174,9 @@ class JoystickController(QThread):
             self.mech_arm.send_angles(init_angles, 100)
     
     def joyhat_motion_event_handle(self, event, joystick):
+        if not self.mech_arm:
+            return
+            
         hat_value = joystick.get_hat(0)
         if hat_value == (0, -1):
             self.mech_arm.jog_coord(3, 0, arm_speed)
@@ -168,9 +220,39 @@ class JoystickController(QThread):
             self.__running = True
             joystick = pygame.joystick.Joystick(0)
             joystick.init()
-            while not rospy.is_shutdown() and self.__running:
-                for event in pygame.event.get():
-                    self.handle_event(event, joystick)
+            
+            # Setup hardware (Pumps and MechArm) cleanly and safely here in background thread
+            try:
+                Functional.init_pump()
+                Functional.turn_off_pump()
+            except Exception as e:
+                self.notice(f"Pump init failed: {e}")
+                
+            if MYCOBOT_AVAILABLE and self.mech_arm is not None:
+                try:
+                    self.mech_arm.send_angles(init_angles, 50)
+                    self.mech_arm.set_gripper_state(0, 100)
+                    import time
+                    time.sleep(1)
+                    self.mech_arm.set_fresh_mode(0)
+                    print("init_ok")
+                except Exception as e:
+                    self.notice(f"Arm init failed: {e}")
+            
+            
+            # 检查 ROS 是否可用
+            if not ROS_AVAILABLE or rospy is None:
+                self.notice("ROS not available, running in mock mode")
+                # 在模拟模式下简单循环
+                while self.__running:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            self.__running = False
+                    pygame.time.wait(100)
+            else:
+                while not rospy.is_shutdown() and self.__running:
+                    for event in pygame.event.get():
+                        self.handle_event(event, joystick)
         except Exception as e:
             print(e)
             print(traceback.format_exc())
