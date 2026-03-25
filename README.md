@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AGV_UI
 
 ## 软件运行
@@ -27,3 +28,6 @@
    ```
 6. 使用`PyQT5-tools`自带的`QT Linguist`翻译`ts`文件
 7. 翻译完成之后点击`发布`即可完成翻译
+=======
+# Agv_pro_intelligentUI
+>>>>>>> 4303db392ae3b244d3b750b540e60b44244d0ec3
